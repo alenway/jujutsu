@@ -43,6 +43,7 @@
     </div>
 
     <div class="main">
+      <!-- LESSONS PANEL: LEVELS + REFERENCE -->
       <div class="lessons-panel">
         <div class="lp-mode-row">
           <button
@@ -57,6 +58,7 @@
           </button>
         </div>
 
+        <!-- LEVELS VIEW -->
         <div
           class="lp-levels-view"
           id="lp-levels-view"
@@ -84,6 +86,7 @@
           </div>
         </div>
 
+        <!-- REFERENCE VIEW -->
         <div class="lp-ref-view" id="lp-ref-view" style="display: none">
           <div class="ref-search-row">
             <span class="ref-search-icon">🔍</span>
@@ -100,6 +103,7 @@
         </div>
       </div>
 
+      <!-- CENTER -->
       <div class="center">
         <div class="graph-wrap" id="gwrap">
           <svg id="gsvg" xmlns="http://www.w3.org/2000/svg">
@@ -116,7 +120,7 @@
                 <path
                   d="M2 1L8 5L2 9"
                   fill="none"
-                  stroke="currentColor"
+                  stroke="context-stroke"
                   stroke-width="1.6"
                   stroke-linecap="round"
                   stroke-linejoin="round"
@@ -154,7 +158,8 @@
             <div class="init-eyebrow">interactive vcs simulator</div>
             <div class="init-title">Learn Git & jj visually</div>
             <div class="init-sub">
-              Watch your commit history grow as a live graph.
+              Watch your commit history grow as a live graph. Follow the levels
+              on the left — or just explore freely.
             </div>
             <div class="init-btns">
               <button class="init-btn git" onclick="doInit('git')">
@@ -169,6 +174,76 @@
                 both (colocate)
               </button>
             </div>
+            <div class="init-tip">
+              tip: try <code>jj git init --colocate</code> to use both together
+            </div>
+          </div>
+          <div class="ghud" id="ghud" style="display: none">
+            <span id="hud-wc" style="color: var(--green)">@ → –</span>
+            <div class="hud-sep"></div>
+            <span id="hud-msg">–</span>
+            <div class="hud-sep"></div>
+            <span id="hud-cid" style="color: var(--ink3)">cid: –</span>
+            <div class="hud-sep"></div>
+            <span class="hud-hint">click node · drag to pan · scroll zoom</span>
+          </div>
+          <div class="gleg">
+            <span class="li">
+              <svg width="13" height="13">
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="5"
+                  fill="#f2ede4"
+                  stroke="#9a9280"
+                  stroke-width="1.5"
+                />
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="2.2"
+                  fill="#6a6258"
+                  opacity=".7"
+                /></svg
+              >commit</span
+            >
+            <span class="li">
+              <svg width="13" height="13">
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="5"
+                  fill="#e8f2e4"
+                  stroke="#256030"
+                  stroke-width="2.2"
+                />
+                <circle
+                  cx="6.5"
+                  cy="6.5"
+                  r="2.2"
+                  fill="#1a5028"
+                  opacity=".8"
+                /></svg
+              >working copy</span
+            >
+            <span class="li"
+              ><svg width="13" height="13">
+                <rect
+                  x="3.5"
+                  y="3.5"
+                  width="6"
+                  height="6"
+                  rx="1.5"
+                  fill="#26221a"
+                  transform="rotate(45 6.5 6.5)"
+                /></svg
+              >root (oldest)</span
+            >
+            <span
+              class="li"
+              style="margin-top: 2px; color: var(--ink3); font-style: italic"
+              >newer ↑ older ↓</span
+            >
           </div>
           <div class="zoom-row">
             <button class="zbtn" onclick="zoomIn()">+</button>
@@ -194,6 +269,10 @@
             <span class="tpd" id="tpd"
               >▸ jujutsu · revision tree simulator</span
             >
+            <div class="tacts">
+              <button class="tact" onclick="termClear()">clear</button>
+              <button class="tact" onclick="termHelp()">help</button>
+            </div>
           </div>
           <div class="tlog" id="tlog"></div>
           <div class="tinput-area">
@@ -203,11 +282,12 @@
               <input
                 class="tinput"
                 id="tinput"
-                placeholder="type a command..."
+                placeholder="type a command or press try it →"
                 autocomplete="off"
                 spellcheck="false"
               />
             </div>
+            <span class="thint" id="thint" style="display: none">tab</span>
           </div>
         </div>
       </div>
@@ -215,6 +295,12 @@
 
     <div class="alldone-overlay" id="alldone-overlay">
       <div class="alldone-icon">🏆</div>
+      <div class="alldone-title">All levels complete!</div>
+      <div class="alldone-sub">
+        You've mastered the core concepts of jj and git — commits, branches,
+        rebases, bookmarks, and the safety net of undo. The graph is yours to
+        explore.
+      </div>
       <button
         class="alldone-restart"
         onclick="
