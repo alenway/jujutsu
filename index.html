@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+    <title>jujutsu mind tree</title>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="logo">
+        <div class="logo-box">jj</div>
+        <span class="logo-name">revision mind tree</span>
+      </div>
+      <div class="spacer"></div>
+      <span id="badge-mode" class="badge n">not initialized</span>
+      <span id="badge-wc" class="badge g" style="display: none">@ → –</span>
+      <span id="badge-branch" class="badge b" style="display: none">HEAD</span>
+      <span id="badge-bm" class="badge p" style="display: none"
+        >no bookmark</span
+      >
+      <button
+        class="tbtn"
+        id="btn-undo"
+        onclick="cmdUndo()"
+        style="display: none"
+      >
+        ↺ undo
+      </button>
+      <button
+        class="tbtn"
+        id="btn-new"
+        onclick="cmdNew()"
+        style="display: none"
+      >
+        + new
+      </button>
+      <button class="tbtn danger" onclick="doReset()">reset</button>
+    </div>
+
+    <div class="main">
+      <div class="lessons-panel">
+        <div class="lp-mode-row">
+          <button
+            class="lp-mode-btn active"
+            id="mode-levels"
+            onclick="lpSetMode('levels')"
+          >
+            🎯 levels
+          </button>
+          <button class="lp-mode-btn" id="mode-ref" onclick="lpSetMode('ref')">
+            📖 reference
+          </button>
+        </div>
+
+        <div
+          class="lp-levels-view"
+          id="lp-levels-view"
+          style="position: relative"
+        >
+          <div class="level-progress-bar">
+            <div
+              class="level-progress-fill"
+              id="level-progress-fill"
+              style="width: 0%"
+            ></div>
+          </div>
+          <div class="level-map" id="level-map"></div>
+          <div class="level-detail" id="level-detail"></div>
+          <div class="level-success" id="level-success">
+            <div class="ls-icon">🎉</div>
+            <div class="ls-title" id="ls-title">Level complete!</div>
+            <div class="ls-explain" id="ls-explain"></div>
+            <button class="ls-next" onclick="levelNext()">Next level →</button>
+          </div>
+          <div class="level-footer">
+            <button class="lf-try" onclick="levelTryIt()">▸ try it</button>
+            <button class="lf-skip" onclick="levelSkip()">skip</button>
+            <span class="lf-prog" id="lf-prog">0 / 0</span>
+          </div>
+        </div>
+
+        <div class="lp-ref-view" id="lp-ref-view" style="display: none">
+          <div class="ref-search-row">
+            <span class="ref-search-icon">🔍</span>
+            <input
+              class="ref-search"
+              id="ref-search"
+              placeholder="search commands…"
+              autocomplete="off"
+              spellcheck="false"
+              oninput="refSearch(this.value)"
+            />
+          </div>
+          <div class="ref-list" id="ref-list"></div>
+        </div>
+      </div>
+
+      <div class="center">
+        <div class="graph-wrap" id="gwrap">
+          <svg id="gsvg" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker
+                id="arr"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="5.5"
+                markerHeight="5.5"
+                orient="auto-start-reverse"
+              >
+                <path
+                  d="M2 1L8 5L2 9"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="1.6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </marker>
+              <marker
+                id="arr2"
+                viewBox="0 0 10 10"
+                refX="8"
+                refY="5"
+                markerWidth="6.5"
+                markerHeight="6.5"
+                orient="auto-start-reverse"
+              >
+                <path
+                  d="M2 1L8 5L2 9"
+                  fill="none"
+                  stroke="#26221a"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </marker>
+            </defs>
+            <g id="vp">
+              <g id="gl"></g>
+              <g id="el"></g>
+              <g id="nl"></g>
+              <g id="hl"></g>
+            </g>
+          </svg>
+          <div class="cmd-annotation" id="cmd-annotation"></div>
+          <div class="ntip" id="ntip"></div>
+          <div class="init-overlay" id="init-overlay">
+            <div class="init-eyebrow">interactive vcs simulator</div>
+            <div class="init-title">Learn Git & jj visually</div>
+            <div class="init-sub">
+              Watch your commit history grow as a live graph.
+            </div>
+            <div class="init-btns">
+              <button class="init-btn git" onclick="doInit('git')">
+                git init
+              </button>
+              <span class="init-or">or</span>
+              <button class="init-btn jj" onclick="doInit('jj')">
+                jj init
+              </button>
+              <span class="init-or">or</span>
+              <button class="init-btn both" onclick="doInit('both')">
+                both (colocate)
+              </button>
+            </div>
+          </div>
+          <div class="zoom-row">
+            <button class="zbtn" onclick="zoomIn()">+</button>
+            <button class="zbtn sm" onclick="fitView()">fit</button>
+            <button class="zbtn" onclick="zoomOut()">−</button>
+          </div>
+        </div>
+
+        <div class="infobar" id="infobar">
+          <span class="infobar-empty"
+            >initialize the repo to see live commit info here</span
+          >
+        </div>
+
+        <div class="term-wrap">
+          <div class="term-topbar">
+            <div class="term-dots">
+              <div class="term-dot r"></div>
+              <div class="term-dot y"></div>
+              <div class="term-dot g"></div>
+            </div>
+            <span class="tmode none" id="tmode">no repo</span>
+            <span class="tpd" id="tpd"
+              >▸ jujutsu · revision tree simulator</span
+            >
+          </div>
+          <div class="tlog" id="tlog"></div>
+          <div class="tinput-area">
+            <span class="tprompt-lbl" id="tplbl">▸</span>
+            <div class="ishell" id="ishell">
+              <div class="ighost" id="ighost"></div>
+              <input
+                class="tinput"
+                id="tinput"
+                placeholder="type a command..."
+                autocomplete="off"
+                spellcheck="false"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="alldone-overlay" id="alldone-overlay">
+      <div class="alldone-icon">🏆</div>
+      <button
+        class="alldone-restart"
+        onclick="
+          document.getElementById('alldone-overlay').classList.remove('show');
+          doReset();
+        "
+      >
+        Start over
+      </button>
+    </div>
+    <script src="./script.js"></script>
+  </body>
+</html>
